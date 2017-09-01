@@ -17,13 +17,16 @@ if [ -z $BENCHMARK ]; then
 fi
 
 function cleanup {
-	gather_files 02-perf ${TEST_SUITE}
-	docker rm -f server client 2> /dev/null || true
-
-	cilium config DropNotification=true Debug=true
+  docker rm -f server client 2> /dev/null || true
+  cilium config DropNotification=true Debug=true
 }
 
-trap cleanup EXIT
+function finish_test {
+  gather_files 02-perf ${TEST_SUITE}
+  cleanup
+}
+
+trap finish_test EXIT
 
 SERVER_LABEL="id.server"
 CLIENT_LABEL="id.client"
